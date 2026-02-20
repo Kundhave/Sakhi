@@ -4,7 +4,7 @@
 
 ### *Financial Identity for Every Rural Woman*
 
-**India has 33 million SHG women. Banks don't know they exist.**
+**From Handwritten Ledgers to Bank-Ready Credit.**
 
 ---
 
