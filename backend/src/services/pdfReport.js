@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+// PDF report generation — returns HTML (use browser print-to-PDF)
 const prisma = require('../db/prisma');
 
 function scoreColor(band) {
@@ -159,20 +159,7 @@ async function generateGroupReport(groupId) {
 
   const reportDate = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
   const html = buildGroupHTML(group, group.members, allTransactions, reportDate);
-
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-  });
-
-  try {
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'networkidle0' });
-    const pdf = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '10mm', bottom: '10mm', left: '10mm', right: '10mm' } });
-    return pdf;
-  } finally {
-    await browser.close();
-  }
+  return html;
 }
 
 async function generateMemberReport(memberId) {
@@ -251,19 +238,7 @@ async function generateMemberReport(memberId) {
 </body>
 </html>`;
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-  });
-
-  try {
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'networkidle0' });
-    const pdf = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '10mm', bottom: '10mm', left: '10mm', right: '10mm' } });
-    return pdf;
-  } finally {
-    await browser.close();
-  }
+  return html;
 }
 
 module.exports = { generateGroupReport, generateMemberReport };

@@ -5,6 +5,12 @@ node_modules/
 # Environment variables — NEVER commit these
 .env
 frontend/.env
+telegram_bot/.env
+backend/.env
+
+# Python cache
+__pycache__/
+*/__pycache__/
 
 # WhatsApp session — contains auth tokens
 .wwebjs_auth/

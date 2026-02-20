@@ -52,7 +52,7 @@ export default function GroupForm() {
             { label: 'State *', field: 'state', required: true, placeholder: 'State name' },
             { label: 'Bank Name *', field: 'bankName', required: true, placeholder: 'e.g. Indian Bank' },
             { label: 'Leader Name *', field: 'leaderName', required: true, placeholder: 'Full name' },
-            { label: 'Leader WhatsApp Number *', field: 'leaderPhone', required: true, placeholder: '919876543210' },
+            { label: 'Leader Phone Number *', field: 'leaderPhone', required: true, placeholder: '919876543210' },
           ].map(({ label, field, required, placeholder }) => (
             <div key={field}>
               <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>

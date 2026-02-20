@@ -32,11 +32,16 @@ router.get('/group/:groupId', async (req, res) => {
   }
 });
 
-// POST create transaction (leader-entered)
+// POST create transaction (leader-entered or bot-entered)
 router.post('/', async (req, res) => {
   try {
     const tx = await prisma.transaction.create({ data: req.body });
-    await calculateCreditScore(tx.memberId);
+    // Recalculate credit score — non-fatal, transaction is the critical operation
+    try {
+      await calculateCreditScore(tx.memberId);
+    } catch (scoreErr) {
+      console.error(`Credit score recalculation failed for member ${tx.memberId}:`, scoreErr.message);
+    }
     res.status(201).json(tx);
   } catch (err) {
     res.status(500).json({ error: err.message });

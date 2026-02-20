@@ -4,7 +4,6 @@
 #
 # Run:  python bot.py
 
-import asyncio
 import logging
 import os
 
@@ -55,7 +54,14 @@ async def set_state(member_id: str, state: str, context: dict = None):
 # ── /start command ─────────────────────────────────────────────────────────────
 
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    member = await get_member_for_update(update)
+    logger.info(f"Received /start from user {update.effective_user.id} ({update.effective_user.first_name})")
+    try:
+        member = await get_member_for_update(update)
+        logger.info(f"Member lookup result: {member is not None}")
+    except Exception as e:
+        logger.error(f"Error looking up member: {e}", exc_info=True)
+        await reply(update, "Error connecting to backend. Please try again.")
+        return
     if not member:
         await reply(update, (
             "Welcome to Sakhi 🌸\n\n"
@@ -75,13 +81,17 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ── /menu command ──────────────────────────────────────────────────────────────
 
 async def cmd_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    member = await get_member_for_update(update)
-    if not member:
-        await reply(update, "You are not registered. Contact your SHG leader.")
-        return
-    msgs = get_messages(member["language"])
-    await set_state(member["id"], "AWAIT_MENU_CHOICE")
-    await reply(update, msgs["WELCOME_MENU"])
+    try:
+        member = await get_member_for_update(update)
+        if not member:
+            await reply(update, "You are not registered. Contact your SHG leader.")
+            return
+        msgs = get_messages(member["language"])
+        await set_state(member["id"], "AWAIT_MENU_CHOICE")
+        await reply(update, msgs["WELCOME_MENU"])
+    except Exception as e:
+        logger.error(f"Error in cmd_menu: {e}", exc_info=True)
+        await reply(update, "Something went wrong. Please try again.")
 
 
 # ── Main message handler ───────────────────────────────────────────────────────
@@ -92,75 +102,80 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     body = update.message.text.strip()
 
-    # Look up member
-    member = await get_member_for_update(update)
-    if not member:
-        await reply(update, (
-            "You are not registered in Sakhi. 🌸\n"
-            "Please contact your SHG leader to register you.\n\n"
-            f"Your Telegram ID: {update.effective_user.id}"
-        ))
-        return
+    try:
+        # Look up member
+        member = await get_member_for_update(update)
+        if not member:
+            await reply(update, (
+                "You are not registered in Sakhi. 🌸\n"
+                "Please contact your SHG leader to register you.\n\n"
+                f"Your Telegram ID: {update.effective_user.id}"
+            ))
+            return
 
-    msgs = get_messages(member["language"])
+        msgs = get_messages(member["language"])
 
-    # "menu" or "0" resets to main menu from any state
-    if body.lower() in ("menu", "0"):
+        # "menu" or "0" resets to main menu from any state
+        if body.lower() in ("menu", "0"):
+            await set_state(member["id"], "AWAIT_MENU_CHOICE")
+            await reply(update, msgs["WELCOME_MENU"])
+            return
+
+        state = member.get("conversationState", "IDLE")
+        ctx = member.get("conversationContext") or {}
+
+        # ── IDLE → show menu ───────────────────────────────────────────────────
+        if state == "IDLE":
+            await set_state(member["id"], "AWAIT_MENU_CHOICE")
+            await reply(update, msgs["WELCOME_MENU"])
+            return
+
+        # ── AWAIT_MENU_CHOICE ──────────────────────────────────────────────────
+        if state == "AWAIT_MENU_CHOICE":
+            await handle_menu_choice(update, member, msgs, body)
+            return
+
+        # ── CONTRIBUTION FLOW ──────────────────────────────────────────────────
+        if state == "AWAIT_CONTRIBUTION":
+            await handle_await_contribution(update, member, msgs, body)
+            return
+
+        if state == "AWAIT_REPAYMENT_CHECK":
+            await handle_await_repayment_check(update, member, msgs, body, ctx)
+            return
+
+        if state == "AWAIT_REPAYMENT_AMOUNT":
+            await handle_await_repayment_amount(update, member, msgs, body, ctx)
+            return
+
+        if state == "CONFIRM_CHECKIN":
+            await handle_confirm_checkin(update, member, msgs, body, ctx)
+            return
+
+        # ── LOAN FLOW ──────────────────────────────────────────────────────────
+        if state == "AWAIT_LOAN_AMOUNT":
+            await handle_await_loan_amount(update, member, msgs, body)
+            return
+
+        if state == "AWAIT_LOAN_PURPOSE":
+            await handle_await_loan_purpose(update, member, msgs, body, ctx)
+            return
+
+        if state == "AWAIT_LOAN_MONTHS":
+            await handle_await_loan_months(update, member, msgs, body, ctx)
+            return
+
+        if state == "AWAIT_OUTSTANDING_CHECK":
+            await handle_await_outstanding_check(update, member, msgs, body, ctx)
+            return
+
+        # ── Unknown state — reset ──────────────────────────────────────────────
         await set_state(member["id"], "AWAIT_MENU_CHOICE")
         await reply(update, msgs["WELCOME_MENU"])
-        return
 
-    state = member.get("conversationState", "IDLE")
-    ctx = member.get("conversationContext") or {}
-
-    # ── IDLE → show menu ───────────────────────────────────────────────────────
-    if state == "IDLE":
-        await set_state(member["id"], "AWAIT_MENU_CHOICE")
-        await reply(update, msgs["WELCOME_MENU"])
-        return
-
-    # ── AWAIT_MENU_CHOICE ──────────────────────────────────────────────────────
-    if state == "AWAIT_MENU_CHOICE":
-        await handle_menu_choice(update, member, msgs, body)
-        return
-
-    # ── CONTRIBUTION FLOW ──────────────────────────────────────────────────────
-    if state == "AWAIT_CONTRIBUTION":
-        await handle_await_contribution(update, member, msgs, body)
-        return
-
-    if state == "AWAIT_REPAYMENT_CHECK":
-        await handle_await_repayment_check(update, member, msgs, body, ctx)
-        return
-
-    if state == "AWAIT_REPAYMENT_AMOUNT":
-        await handle_await_repayment_amount(update, member, msgs, body, ctx)
-        return
-
-    if state == "CONFIRM_CHECKIN":
-        await handle_confirm_checkin(update, member, msgs, body, ctx)
-        return
-
-    # ── LOAN FLOW ──────────────────────────────────────────────────────────────
-    if state == "AWAIT_LOAN_AMOUNT":
-        await handle_await_loan_amount(update, member, msgs, body)
-        return
-
-    if state == "AWAIT_LOAN_PURPOSE":
-        await handle_await_loan_purpose(update, member, msgs, body, ctx)
-        return
-
-    if state == "AWAIT_LOAN_MONTHS":
-        await handle_await_loan_months(update, member, msgs, body, ctx)
-        return
-
-    if state == "AWAIT_OUTSTANDING_CHECK":
-        await handle_await_outstanding_check(update, member, msgs, body, ctx)
-        return
-
-    # ── Unknown state — reset ──────────────────────────────────────────────────
-    await set_state(member["id"], "AWAIT_MENU_CHOICE")
-    await reply(update, msgs["WELCOME_MENU"])
+    except Exception as e:
+        logger.error(f"Error in handle_message: {e}", exc_info=True)
+        await reply(update, "Something went wrong. Please type 'menu' to restart.")
 
 
 # ── Menu choice ────────────────────────────────────────────────────────────────
@@ -270,11 +285,14 @@ async def handle_confirm_checkin(update, member, msgs, body, ctx):
         # Update totalContributed
         await api.update_total_contributed(mid, contrib)
 
-        # Reset state first
+        # Reset state
         await set_state(mid, "IDLE")
 
-        # Recalculate credit score in background
-        asyncio.create_task(api.recalculate_score(mid))
+        # Recalculate credit score (await instead of create_task to avoid silent failures)
+        try:
+            await api.recalculate_score(mid)
+        except Exception as e:
+            logger.error(f"Credit score recalculation failed for {mid}: {e}", exc_info=True)
 
         await reply(update, msgs["SAVED_SUCCESS"])
 
@@ -346,11 +364,14 @@ async def handle_await_outstanding_check(update, member, msgs, body, ctx):
 # ── Error handler ──────────────────────────────────────────────────────────────
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
-    logger.error("Exception while handling update:", exc_info=context.error)
+    logger.error(f"Exception while handling update: {context.error}", exc_info=context.error)
     if isinstance(update, Update) and update.message:
-        await update.message.reply_text(
-            "Something went wrong on our end. Please type 'menu' to restart."
-        )
+        try:
+            await update.message.reply_text(
+                "Something went wrong on our end. Please type 'menu' to restart."
+            )
+        except Exception as e:
+            logger.error(f"Failed to send error message: {e}")
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────
