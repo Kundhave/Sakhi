@@ -59,6 +59,10 @@ Bank sees verified financial history
 Loan approved
 ```
 
+#Architecture 
+
+![Alt text](Flow_Diagram.png)
+
 Two interfaces. Two user types. One connected system.
 
 | SHG Members | SHG Leader |
@@ -146,19 +150,6 @@ The leader sets each member's language at registration. Every message, menu, con
 
 ---
 
-## Architecture
-
-```
-┌─────────────────┐        ┌──────────────────────┐        ┌──────────────────┐
-│  Telegram Bot   │──HTTP──▶   Node.js Backend    ◀──HTTP──│  React Dashboard │
-│  (Python)       │        │  Express + Prisma     │        │  Vite + Tailwind │
-└─────────────────┘        └──────────┬───────────┘        └──────────────────┘
-                                      │
-                           ┌──────────▼───────────┐
-                           │  PostgreSQL           │
-                           │  (Supabase)           │
-                           └──────────────────────┘
-```
 
 The Telegram bot and React dashboard both talk to the same backend API. All business logic — credit scoring, scheme eligibility, PDF generation — lives in the backend. Swapping Telegram for WhatsApp Business API means changing only the bot layer.
 
