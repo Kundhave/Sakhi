@@ -32,6 +32,14 @@ Their records live in **handwritten notebooks**. Those notebooks get damaged, lo
 
 ---
 
+## The NABARD Connection
+
+**NABARD's SHG-Bank Linkage Programme** is India's largest microfinance initiative, enabling banks to give collateral-free loans directly to Self Help Groups — yet over **46% of SHGs, nearly 67 lakh groups, remain credit-unlinked** as of March 2024, largely because their financial records exist only in handwritten notebooks that banks won't accept.
+
+Sakhi is built specifically to close this gap. By digitally recording every contribution and repayment through a chatbot and generating a verified, timestamped PDF credit report, Sakhi gives any SHG the documentation they need to qualify for NABARD bank linkage and access the formal credit system — many for the first time.
+
+---
+
 ## Our Solution
 
 **Sakhi digitizes SHG financial records through tools these women already use** — and turns years of disciplined saving into a verifiable credit identity.
