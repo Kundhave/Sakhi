@@ -81,7 +81,7 @@ Two interfaces. Two user types. One connected system.
 
 The honest answer: **we wanted WhatsApp, and we couldn't get it to work reliably.**
 
-WhatsApp has no official open bot API. The only way to automate it is through unofficial reverse-engineered libraries that depend on running a headless browser — fragile, unstable, and requires the leader's actual WhatsApp account to stay permanently linked. We tried. It crashed repeatedly.
+WhatsApp has no official open bot API for free / business verification which could accomadate all our requirements. The only way to automate it is through unofficial reverse-engineered libraries that depend on running a headless browser — fragile, unstable, and requires the leader's actual WhatsApp account to stay permanently linked. We tried. It crashed repeatedly.
 
 So we made a deliberate decision.
 
