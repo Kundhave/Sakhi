@@ -89,6 +89,15 @@ So we made a deliberate decision.
 
 ---
 
+## The Telegram bot 
+
+<img width="327" height="712" alt="image" src="https://github.com/user-attachments/assets/c534fc85-64ef-438b-8c72-d0cc55ff804b" />
+<img width="328" height="700" alt="image" src="https://github.com/user-attachments/assets/34eb03fb-31dd-4ba7-87b3-6725189c830c" />
+<img width="326" height="717" alt="image" src="https://github.com/user-attachments/assets/ea7c4039-328c-4d20-a06d-0ed2573e126c" />
+<img width="339" height="417" alt="image" src="https://github.com/user-attachments/assets/f220dfeb-390a-4536-bb26-16c14214c901" />
+<img width="350" height="736" alt="image" src="https://github.com/user-attachments/assets/bcecbf97-b797-4ba0-b7bd-2cf0c41566f8" />
+
+
 ## The Credit Score
 
 Sakhi builds a **0–100 credit score** for each member from her SHG behavior alone. No CIBIL. No bank account required. No formal credit history needed.
