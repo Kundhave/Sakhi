@@ -17,6 +17,8 @@
 
 ---
 
+## Demo Video - (https://youtu.be/dcG4SVQ73c8?si=5oWvlVW1hS_DqhxP)
+
 ## The Problem
 
 India has **2.2 million Self Help Groups** with **33 million women members** who pool savings, give internal loans, and repay them — often without missing a single payment for years.
