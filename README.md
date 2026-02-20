@@ -17,7 +17,7 @@
 
 ---
 
-## Demo Video - (https://youtu.be/dcG4SVQ73c8?si=5oWvlVW1hS_DqhxP)
+## Demo Video - https://youtu.be/dcG4SVQ73c8?si=5oWvlVW1hS_DqhxP
 
 ## The Problem
 
