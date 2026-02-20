@@ -59,7 +59,7 @@ Bank sees verified financial history
 Loan approved
 ```
 
-#Architecture 
+## Architecture 
 
 ![Alt text](Flow_Diagram.png)
 
