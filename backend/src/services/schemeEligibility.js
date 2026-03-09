@@ -1,6 +1,4 @@
 const prisma = require('../db/prisma');
-const { sendWhatsAppMessage } = require('./notifications');
-
 const SCHEMES = [
   {
     name: 'PM_JAN_DHAN',
@@ -44,9 +42,9 @@ const SCHEMES = [
       if (!group) return false;
       const monthsActive = groupTransactions.length > 0
         ? Math.ceil(
-            (Date.now() - new Date(groupTransactions[0].createdAt).getTime()) /
-              (1000 * 60 * 60 * 24 * 30)
-          )
+          (Date.now() - new Date(groupTransactions[0].createdAt).getTime()) /
+          (1000 * 60 * 60 * 24 * 30)
+        )
         : 0;
       return monthsActive >= 6 && group.corpusAmount > 0;
     },
@@ -94,18 +92,12 @@ async function checkEligibility(memberId) {
         data: { isEligible },
       });
 
-      // Notify if newly eligible
-      if (wasNotEligible && nowEligible && !existing.notified) {
-        const lang = require('../whatsapp/languages');
-        const msgs = lang.getMessages(member.language);
-        const message = msgs.SCHEME_NOTIFICATION(scheme.displayName, scheme.benefit);
-        await sendWhatsAppMessage(member.phoneNumber, message);
+      // Removed WhatsApp notification code 
 
-        await prisma.schemeEligibility.update({
-          where: { id: existing.id },
-          data: { notified: true, notifiedAt: new Date() },
-        });
-      }
+      await prisma.schemeEligibility.update({
+        where: { id: existing.id },
+        data: { notified: true, notifiedAt: new Date() },
+      });
     }
   }
 }
