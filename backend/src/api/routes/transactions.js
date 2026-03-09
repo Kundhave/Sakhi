@@ -36,6 +36,19 @@ router.get('/group/:groupId', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const tx = await prisma.transaction.create({ data: req.body });
+
+    // Update group corpus for contributions and loan repayments
+    if (tx.groupId && (tx.type === 'CONTRIBUTION' || tx.type === 'LOAN_REPAYMENT')) {
+      try {
+        await prisma.sHGGroup.update({
+          where: { id: tx.groupId },
+          data: { corpusAmount: { increment: tx.amount } },
+        });
+      } catch (corpusErr) {
+        console.error(`Corpus update failed for group ${tx.groupId}:`, corpusErr.message);
+      }
+    }
+
     // Recalculate credit score — non-fatal, transaction is the critical operation
     try {
       await calculateCreditScore(tx.memberId);

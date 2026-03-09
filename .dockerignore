@@ -1,0 +1,20 @@
+# Git
+.git
+.gitignore
+
+# Dependency directories
+**/node_modules
+
+# Build outputs
+**/dist
+
+# Log files
+**/*.log
+
+# Local env files
+**/.env
+**/.env.*
+!**/.env.example
+
+# Telegram bot (already deleted, but just in case)
+telegram_bot/

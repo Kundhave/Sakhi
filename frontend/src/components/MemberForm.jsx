@@ -48,9 +48,8 @@ export default function MemberForm({ groupId, onSuccess, onCancel }) {
             type="tel" required value={form.phoneNumber}
             onChange={(e) => set('phoneNumber', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            placeholder="TG_123456789"
+            placeholder="+91 98765 43210"
           />
-          <p className="text-xs text-gray-400 mt-1">For Telegram users, enter TG_ followed by their Telegram ID (e.g. TG_123456789)</p>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>

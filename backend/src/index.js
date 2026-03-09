@@ -24,5 +24,5 @@ app.use('/api/reports', require('./api/routes/reports'));
 
 app.listen(PORT, () => {
   console.log(`🚀 Sakhi backend running on http://localhost:${PORT}`);
-  console.log(`📋 Dashboard API ready. Start the Telegram bot separately.`);
+  console.log(`📋 Dashboard API ready.`);
 });

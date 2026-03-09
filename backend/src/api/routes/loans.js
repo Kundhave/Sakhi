@@ -2,18 +2,7 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('../../db/prisma');
 
-// Notifications are now optional — Telegram bot handles its own notifications
-// WhatsApp notification is a no-op if client not connected
-async function tryNotify(phoneNumber, message) {
-  try {
-    const { sendWhatsAppMessage } = require('../../services/notifications');
-    await sendWhatsAppMessage(phoneNumber, message);
-  } catch (e) {
-    // Silently ignore — Telegram bot will handle member notification separately
-  }
-}
-
-// GET all loans for a group (optionally filtered by status)
+// GET loans for a group
 router.get('/group/:groupId', async (req, res) => {
   try {
     const { status } = req.query;
@@ -33,7 +22,7 @@ router.get('/group/:groupId', async (req, res) => {
   }
 });
 
-// GET loans for a specific member (used by Telegram bot)
+// GET loans for a specific member
 router.get('/member/:memberId', async (req, res) => {
   try {
     const loans = await prisma.loanRequest.findMany({
@@ -85,6 +74,7 @@ router.patch('/:id/reject', async (req, res) => {
       data: { status: 'REJECTED', resolvedAt: new Date() },
       include: { member: true },
     });
+
     res.json(loan);
   } catch (err) {
     res.status(500).json({ error: err.message });

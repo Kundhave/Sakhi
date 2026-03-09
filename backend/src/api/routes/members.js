@@ -18,21 +18,6 @@ router.get('/group/:groupId', async (req, res) => {
   }
 });
 
-// ── TELEGRAM: look up member by Telegram user ID ───────────────────────────
-// The member's Telegram ID is stored in the phoneNumber field prefixed with "TG_"
-// e.g. phoneNumber = "TG_123456789"
-router.get('/by-telegram/:telegramId', async (req, res) => {
-  try {
-    const member = await prisma.member.findUnique({
-      where: { phoneNumber: `TG_${req.params.telegramId}` },
-      include: { group: true },
-    });
-    if (!member) return res.status(404).json({ error: 'Member not found' });
-    res.json(member);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // GET single member with full details
 router.get('/:id', async (req, res) => {
@@ -111,7 +96,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PATCH update member (also used by Telegram bot to update conversationState/context)
+// PATCH update member
 router.patch('/:id', async (req, res) => {
   try {
     const member = await prisma.member.update({

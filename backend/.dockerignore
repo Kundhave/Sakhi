@@ -1,0 +1,4 @@
+node_modules
+.env
+npm_install_log.txt
+*.log
