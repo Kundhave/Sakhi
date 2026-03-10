@@ -77,21 +77,20 @@ Two interfaces. Two user types. One connected system.
 
 ---
 
-## Why Telegram — and Why Not WhatsApp
+## Why WhatsApp
 
-The honest answer: **we wanted WhatsApp, and we couldn't get it to work reliably.**
+WhatsApp is the most widely used messaging platform across India, including rural communities. Since many SHG members already use WhatsApp daily, Sakhi uses it as the primary interaction channel — allowing members to record contributions, request loans, and check their credit score through simple chat-based menus.
 
-WhatsApp has no official open bot API for free / business verification which could accomadate all our requirements. The only way to automate it is through unofficial reverse-engineered libraries that depend on running a headless browser — fragile, unstable, and requires the leader's actual WhatsApp account to stay permanently linked. We tried. It crashed repeatedly.
+To enable reliable automation, Sakhi integrates **WhatsApp through the Twilio WhatsApp API**, which provides official programmatic access to send and receive messages. Incoming messages are delivered to Sakhi via **webhooks**, processed by the backend, and responses are sent back to members instantly.
 
-So we made a deliberate decision.
+This approach avoids the need for browser automation, linked devices, or manual account sessions, making the system **stable, scalable, and production-ready**.
 
-**Telegram has a real, official, free Bot API.** No browser. No linked device. No QR codes. A token from @BotFather and it works instantly, reliably, at scale. The member experience is identical to what we designed for WhatsApp — numbered menus, multilingual replies, step-by-step flows, conversation state persisted in the database.
+The messaging interface is intentionally **decoupled from the core backend logic**. All functionality — credit scoring, transaction recording, loan management, and PDF generation — lives in the backend API.  
 
-**WhatsApp is the production goal.** WhatsApp Business API (Meta's official API) supports exactly this kind of bot. The moment we have access, the bot layer swaps out with zero changes to the Node.js backend or the React dashboard — because all the logic lives in the backend, not the bot. The architecture was built for this from day one.
+Because of this architecture, additional communication channels such as **SMS, or voice bots** can be integrated in the future without changing the backend system.
 
----
 
-## The Telegram bot 
+## The Whatsapp bot 
 
 <img width="327" height="712" alt="image" src="https://github.com/user-attachments/assets/c534fc85-64ef-438b-8c72-d0cc55ff804b" />
 <img width="328" height="700" alt="image" src="https://github.com/user-attachments/assets/34eb03fb-31dd-4ba7-87b3-6725189c830c" />
@@ -231,7 +230,7 @@ cd telegram_bot && python bot.py # Terminal 3 → Telegram polling
 |-------|-----------|
 | Backend | Node.js 22, Express, Prisma 5.7 |
 | Database | PostgreSQL via Supabase |
-| Bot | Python 3, python-telegram-bot 21.6, httpx |
+| Bot | Python 3, whatsapp -Twilio, httpx |
 | Frontend | React 18, Vite, Tailwind CSS |
 | PDF Reports | Puppeteer |
 
