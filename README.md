@@ -161,7 +161,7 @@ The leader sets each member's language at registration. Every message, menu, con
 ---
 
 
-The Telegram bot and React dashboard both talk to the same backend API. All business logic — credit scoring, scheme eligibility, PDF generation — lives in the backend. Swapping Telegram for WhatsApp Business API means changing only the bot layer.
+The WhatsApp bot and React dashboard both talk to the same backend API. All business logic — credit scoring, scheme eligibility, PDF generation — lives in the backend. Swapping Telegram for WhatsApp Business API means changing only the bot layer.
 
 ---
 
