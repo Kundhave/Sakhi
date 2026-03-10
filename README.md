@@ -68,7 +68,7 @@ Two interfaces. Two user types. One connected system.
 
 | SHG Members | SHG Leader |
 |---|---|
-| Chatbot (Telegram) | Web dashboard |
+| Chatbot (WhatsApp) | Web dashboard |
 | Record monthly contributions | Register group and add members |
 | Request loans | Approve or reject loans |
 | Check credit score | View group analytics |
@@ -89,7 +89,7 @@ The messaging interface is intentionally **decoupled from the core backend logic
 Because of this architecture, additional communication channels such as **SMS, or voice bots** can be integrated in the future without changing the backend system.
 
 
-## The Whatsapp bot 
+## The WhatsApp Bot
 
 <img width="327" height="712" alt="image" src="https://github.com/user-attachments/assets/c534fc85-64ef-438b-8c72-d0cc55ff804b" />
 <img width="328" height="700" alt="image" src="https://github.com/user-attachments/assets/34eb03fb-31dd-4ba7-87b3-6725189c830c" />
@@ -160,16 +160,16 @@ The leader sets each member's language at registration. Every message, menu, con
 ---
 
 
-The WhatsApp bot and React dashboard both talk to the same backend API. All business logic — credit scoring, scheme eligibility, PDF generation — lives in the backend. Swapping Telegram for WhatsApp Business API means changing only the bot layer.
+The WhatsApp bot and React dashboard both talk to the same backend API. All business logic — credit scoring, scheme eligibility, PDF generation — lives in the backend. Swapping to a different messaging channel means changing only the bot layer.
 
 ---
 
 ## Future Scope
 
-- **WhatsApp Business API** — the intended production channel, same flows, zero backend changes
 - **NABARD bank integration** — direct digital submission of PDF credit reports
 - **UPI payment tracking** — auto-record contributions from UPI transaction data
 - **Voice bot** — IVR interaction for members without any smartphone
+- **SMS fallback** — reach members in areas with limited data connectivity
 - **Scheme application assist** — guided scheme application through the bot, not just eligibility alerts
 
 ---
@@ -177,13 +177,13 @@ The WhatsApp bot and React dashboard both talk to the same backend API. All busi
 ## Setup
 
 ### Prerequisites
-Node.js 22+, Python 3.10+, a Supabase account (free at supabase.com)
+Node.js 22+, Python 3.10+, a Supabase account (free at supabase.com), a Twilio account with WhatsApp sandbox enabled
 
 ### 1. Install
 ```bash
 cd backend && npm install
 cd ../frontend && npm install
-cd ../telegram_bot && pip install -r requirements.txt
+cd ../whatsapp_bot && pip install -r requirements.txt
 ```
 
 ### 2. Environment variables
@@ -195,9 +195,11 @@ PORT=3001
 API_KEY=sakhi_secret_key_change_this
 ```
 
-**`telegram_bot/.env`**
+**`whatsapp_bot/.env`**
 ```
-TELEGRAM_BOT_TOKEN=your_token_from_botfather
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
 BACKEND_URL=http://localhost:3001
 API_KEY=sakhi_secret_key_change_this
 ```
@@ -212,13 +214,13 @@ npx prisma migrate deploy && npx prisma generate
 ```bash
 cd backend && npm run dev        # Terminal 1 → http://localhost:3001
 cd frontend && npm run dev       # Terminal 2 → http://localhost:5173
-cd telegram_bot && python bot.py # Terminal 3 → Telegram polling
+cd whatsapp_bot && python bot.py # Terminal 3 → WhatsApp webhook listener
 ```
 
 ### 5. Register a member
 1. Leader registers the SHG group on the dashboard
-2. Member sends `/start` to the bot → bot replies with their Telegram ID
-3. Leader adds member in dashboard with phone number as `TG_<their_telegram_id>`
+2. Member sends a message to the Twilio WhatsApp sandbox number → bot replies with their WhatsApp number
+3. Leader adds member in the dashboard using their WhatsApp number (e.g. `+919876543210`)
 4. Member can now use all bot features immediately
 
 ---
@@ -229,7 +231,7 @@ cd telegram_bot && python bot.py # Terminal 3 → Telegram polling
 |-------|-----------|
 | Backend | Node.js 22, Express, Prisma 5.7 |
 | Database | PostgreSQL via Supabase |
-| Bot | Python 3, whatsapp -Twilio, httpx |
+| Bot | Python 3, Twilio WhatsApp API, httpx |
 | Frontend | React 18, Vite, Tailwind CSS |
 | PDF Reports | Puppeteer |
 
